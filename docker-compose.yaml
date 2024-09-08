@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  grafana:
+    image: "grafana/grafana-oss:latest"
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/grafana-config:/etc/grafana
+      - ./grafana/grafana-data:/var/lib/grafana
+    user: "root"
+    environment:
+      GF_RENDERING_SERVER_URL: "http://grafana-image-renderer:8081/render"
+      GF_RENDERING_CALLBACK_URL: "http://grafana:3000/"
+      GF_UNIFIED_ALERTING_SCREENSHOTS_CAPTURE: "true"
+      GF_LOG_FILTERS: "rendering:debug"
+          
+  grafana-image-renderer:
+    image: "grafana/grafana-image-renderer:latest"
+    environment:
+      TZ: "Europe/Moscow"
+
+  prometheus:
+    image: "prom/prometheus:latest"
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./grafana/config/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./grafana/config/web-config.yaml:/etc/prometheus/web-config.yaml
+      - ./grafana/prometheus-data:/prometheus
+    user: "root"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - "--web.config.file=/etc/prometheus/web-config.yaml"
+      - "--storage.tsdb.retention.time=7d"
+
+  pushgateway:
+    image: "prom/pushgateway:latest"
+    container_name: pushgateway
+    ports:
+      - 9091:9091
+    volumes:
+      - ./grafana/config/web-config.yaml:/etc/prometheus/web-config.yaml
+    command:
+      - "--web.config.file=/etc/prometheus/web-config.yaml"
+          

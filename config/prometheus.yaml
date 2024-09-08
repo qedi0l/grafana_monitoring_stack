@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+
+# node exporter (https://github.com/prometheus/node_exporter)
+- job_name: 'node'
+  static_configs:
+  - targets: ['192.168.0.113:9100'] # change 
+  basic_auth:
+    username: 'admin' # change
+    password: 'admin' # change 
+
+# docker daemon (https://docs.docker.com/config/daemon/prometheus/)
+- job_name: 'docker'
+  static_configs:
+  - targets: ['host.docker.internal:9323'] # change 
+
+# pushgateway
+- job_name: 'pushgateway'
+  honor_labels: true
+  static_configs:
+  - targets: ['pushgateway:9091'] # change
+  basic_auth:
+    username: 'admin' # change
+    password: 'admin' # change
+
+# nginx exporter (https://github.com/nginxinc/nginx-prometheus-exporter)
+# - job_name: 'nginx'
+#   static_configs:
+#   - targets: ['192.168.2.104:8080', '192.168.2.104:8080'] # change
+
