@@ -16,7 +16,7 @@ scrape_configs:
   static_configs:
   - targets: ['host.docker.internal:9323'] # change 
 
-# pushgateway
+# pushgateway (https://github.com/prometheus/pushgateway)
 - job_name: 'pushgateway'
   honor_labels: true
   static_configs:
